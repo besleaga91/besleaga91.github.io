@@ -9,6 +9,7 @@
     
     /* Umbră discretă 2D plată pentru separarea elementelor fixe */
     --shade-soft: 0 2px 10px rgba(29, 26, 74, 0.05);
+    --shade-footer: 0 -2px 10px rgba(29, 26, 74, 0.05);
 }
 
 * {
@@ -35,7 +36,7 @@ html {
     text-align: center;
 }
 
-/* Header Simplu */
+/* Header Fixat deasupra camerei / safe area de sus */
 .main-header {
     position: fixed;
     top: 0;
@@ -57,11 +58,13 @@ html {
     letter-spacing: -0.3px;
 }
 
-/* Zona Centrală de Conținut */
+/* Zona Centrală de Conținut cu margini flexibile pentru a nu fi acoperită */
 .main-content {
-    margin-top: calc(80px + max(20px, env(safe-area-inset-top)));
-    padding: 60px 0;
-    min-height: calc(100vh - 160px);
+    /* Calculează spațiul corect ca să nu intre sub header și footer pe mobile */
+    margin-top: calc(90px + max(20px, env(safe-area-inset-top)));
+    margin-bottom: calc(70px + max(20px, env(safe-area-inset-bottom)));
+    padding: 40px 0;
+    min-height: calc(100vh - 240px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -124,16 +127,22 @@ h1 {
     font-size: 1.2rem;
 }
 
-/* Footer Simplificat Peste Safe Area */
+/* Footer Fixat Jos peste clapeta de navigare / safe area de jos */
 .main-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
     background-color: var(--white);
     color: #697386;
     text-align: center;
     font-size: 0.9rem;
+    z-index: 1000;
     padding-top: 20px;
+    /* Adaugă automat spațiul necesar barei de gesturi mobile (Home Bar pe iOS/Android) */
     padding-bottom: max(20px, env(safe-area-inset-bottom));
-    box-shadow: 0 -2px 10px rgba(29, 26, 74, 0.03);
-    border-top: 1px solid #e6ebf1;
+    box-shadow: var(--shade-footer);
+    border-top: 2px solid var(--violet-stripe);
 }
 
 .main-footer p {
