@@ -1,13 +1,12 @@
-/* Stil Pur 2D Plat Simplificat */
+/* Stil Pur 2D Plat Simplificat - Optimizat pentru Safe Area Ecran */
 :root {
     --bg-global: #f7f6ff;
     --violet-stripe: #635bff;
-    --violet-dark: #4f46e5;
     --violet-deep: #1d1a4a;
     --text-color: #2d3142;
     --white: #ffffff;
     
-    /* Umbră discretă 2D plată pentru separarea elementelor fixe */
+    /* Umbră discretă 2D plată */
     --shade-soft: 0 2px 10px rgba(29, 26, 74, 0.05);
     --shade-footer: 0 -2px 10px rgba(29, 26, 74, 0.05);
 }
@@ -18,10 +17,16 @@
     box-sizing: border-box;
 }
 
-html {
+html, body {
+    height: 100%;
+}
+
+body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: var(--text-color);
     background-color: var(--bg-global);
+    display: flex;
+    flex-direction: column;
 }
 
 .container {
@@ -32,11 +37,12 @@ html {
 }
 
 .small-container {
-    max-width: 500px; /* Îngustează conținutul pentru lizibilitate maximă */
+    max-width: 500px;
     text-align: center;
+    width: 100%;
 }
 
-/* Header Fixat deasupra camerei / safe area de sus */
+/* Header Fixat - Se extinde complet peste Safe Area de sus (Notch/Cameră) */
 .main-header {
     position: fixed;
     top: 0;
@@ -45,7 +51,8 @@ html {
     background-color: var(--white);
     box-shadow: var(--shade-soft);
     z-index: 1000;
-    padding-top: max(20px, env(safe-area-inset-top));
+    /* Protejează textul adăugând dynamic padding sub decupajul camerei telefonului */
+    padding-top: calc(15px + env(safe-area-inset-top));
     padding-bottom: 20px;
     text-align: center;
     border-bottom: 2px solid var(--violet-stripe);
@@ -58,22 +65,30 @@ html {
     letter-spacing: -0.3px;
 }
 
-/* Zona Centrală de Conținut cu margini flexibile pentru a nu fi acoperită */
+/* Conținut Central adaptat dinamic ca să nu fie acoperit de Header sau Footer */
 .main-content {
-    /* Calculează spațiul corect ca să nu intre sub header și footer pe mobile */
-    margin-top: calc(90px + max(20px, env(safe-area-inset-top)));
-    margin-bottom: calc(70px + max(20px, env(safe-area-inset-bottom)));
-    padding: 40px 0;
-    min-height: calc(100vh - 240px);
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
+    /* Adaugă margini dinamice calculate în funcție de înălțimea header-ului/footer-ului + safe areas */
+    margin-top: calc(85px + env(safe-area-inset-top));
+    margin-bottom: calc(85px + env(safe-area-inset-bottom));
+    padding: 20px 0;
+}
+
+/* Card de încărcare 2D Plat */
+.loading-card-2d {
+    background-color: var(--white);
+    border: 2px solid var(--violet-deep);
+    padding: 40px 30px;
+    width: 100%;
 }
 
 h1 {
-    font-size: 2.2rem;
+    font-size: 2rem;
     color: var(--violet-deep);
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     font-weight: 800;
     letter-spacing: -0.5px;
 }
@@ -82,52 +97,34 @@ h1 {
     color: var(--violet-stripe);
     font-size: 1.1rem;
     font-weight: 600;
-    margin-bottom: 40px;
+    margin-bottom: 25px;
 }
 
-/* Structura Link-urilor Unul Sub Altul */
-.links-vertical-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
+/* Animație simplă 2D plată pentru bara de încărcare */
+.loading-bar-2d {
+    height: 4px;
     width: 100%;
+    background-color: #eef0f4;
+    position: relative;
+    overflow: hidden;
 }
 
-/* Butoane Listă - Stil 2D Plat */
-.stripe-link-btn {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    text-decoration: none;
-    padding: 18px 24px;
-    background-color: var(--white);
-    color: var(--violet-stripe);
-    font-weight: 700;
-    font-size: 1.05rem;
-    border: 2px solid var(--violet-stripe);
-    transition: all 0.15s ease;
-}
-
-.stripe-link-btn:hover {
+.loading-bar-2d::after {
+    content: '';
+    position: absolute;
+    left: -50%;
+    height: 100%;
+    width: 50%;
     background-color: var(--violet-stripe);
-    color: var(--white);
+    animation: loading-pulse 1.5s infinite linear;
 }
 
-.stripe-link-btn.btn-dark {
-    color: var(--violet-deep);
-    border-color: var(--violet-deep);
+@keyframes loading-pulse {
+    0% { left: -50%; }
+    100% { left: 100%; }
 }
 
-.stripe-link-btn.btn-dark:hover {
-    background-color: var(--violet-deep);
-    color: var(--white);
-}
-
-.arrow {
-    font-size: 1.2rem;
-}
-
-/* Footer Fixat Jos peste clapeta de navigare / safe area de jos */
+/* Footer Fixat - Se extinde complet sub Bara de Navigare/Gesturi a telefonului */
 .main-footer {
     position: fixed;
     bottom: 0;
@@ -139,8 +136,8 @@ h1 {
     font-size: 0.9rem;
     z-index: 1000;
     padding-top: 20px;
-    /* Adaugă automat spațiul necesar barei de gesturi mobile (Home Bar pe iOS/Android) */
-    padding-bottom: max(20px, env(safe-area-inset-bottom));
+    /* Împinge conținutul text în sus pentru a nu se suprapune cu Home Bar-ul de pe iOS/Android */
+    padding-bottom: calc(20px + env(safe-area-inset-bottom));
     box-shadow: var(--shade-footer);
     border-top: 2px solid var(--violet-stripe);
 }
@@ -149,14 +146,12 @@ h1 {
     font-weight: 500;
 }
 
-/* Optimizare Mobile */
+/* Optimizare ecrane foarte mici */
 @media (max-width: 480px) {
     h1 {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
     }
-    
-    .stripe-link-btn {
-        padding: 16px 20px;
-        font-size: 1rem;
+    .loading-card-2d {
+        padding: 30px 20px;
     }
 }
